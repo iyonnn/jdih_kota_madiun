@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_super_parameters, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -47,7 +47,7 @@ class HalamanUtama extends StatelessWidget {
         elevation: 0,
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
@@ -64,7 +64,7 @@ class HalamanUtama extends StatelessWidget {
                 color: Colors.black.withOpacity(0.3),
                 spreadRadius: 1,
                 blurRadius: 1,
-                offset: const Offset(0, 3),
+                offset: Offset(0, 3),
               ),
             ],
           ),
@@ -111,8 +111,7 @@ class HalamanUtama extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
                                   image: DecorationImage(
-                                    image:
-                                        AssetImage(cardData[index]['image']!),
+                                    image: AssetImage(cardData[index]['image']!),
                                     fit: BoxFit.scaleDown,
                                   ),
                                 ),
@@ -179,6 +178,7 @@ class WebViewPage extends StatefulWidget {
 class _WebViewPageState extends State<WebViewPage> {
   InAppWebViewController? _webViewController;
   bool isLoading = true;
+  bool isDesktopMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +206,7 @@ class _WebViewPageState extends State<WebViewPage> {
                           color: Colors.black.withOpacity(0.2),
                           spreadRadius: 1,
                           blurRadius: 2,
-                          offset: const Offset(0, 1),
+                          offset: Offset(0, 1),
                         ),
                       ],
                     ),
@@ -215,9 +215,9 @@ class _WebViewPageState extends State<WebViewPage> {
                 ),
                 SizedBox(width: screenWidth * 0.01),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (_webViewController != null) {
-                      _webViewController?.reload();
+                      await _webViewController?.reload();
                     }
                   },
                   child: Container(
@@ -230,7 +230,7 @@ class _WebViewPageState extends State<WebViewPage> {
                           color: Colors.black.withOpacity(0.2),
                           spreadRadius: 1,
                           blurRadius: 2,
-                          offset: const Offset(0, 1),
+                          offset: Offset(0, 1),
                         ),
                       ],
                     ),
@@ -239,9 +239,9 @@ class _WebViewPageState extends State<WebViewPage> {
                 ),
                 SizedBox(width: screenWidth * 0.01),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (_webViewController != null) {
-                      _webViewController?.goBack();
+                      await _webViewController?.goBack();
                     }
                   },
                   child: Container(
@@ -254,11 +254,50 @@ class _WebViewPageState extends State<WebViewPage> {
                           color: Colors.black.withOpacity(0.2),
                           spreadRadius: 1,
                           blurRadius: 2,
-                          offset: const Offset(0, 1),
+                          offset: Offset(0, 1),
                         ),
                       ],
                     ),
                     child: const Icon(Icons.arrow_back, color: Colors.black),
+                  ),
+                ),
+                SizedBox(width: screenWidth * 0.01),
+                GestureDetector(
+                  onTap: () async {
+                    setState(() {
+                      isDesktopMode = !isDesktopMode;
+                    });
+                    if (_webViewController != null) {
+                      await _webViewController?.setOptions(
+                        options: InAppWebViewGroupOptions(
+                          crossPlatform: InAppWebViewOptions(
+                            userAgent: isDesktopMode
+                                ? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+                                : "Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36",
+                          ),
+                        ),
+                      );
+                      await _webViewController?.reload();
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      isDesktopMode ? Icons.mobile_friendly : Icons.desktop_windows,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ],
@@ -276,9 +315,13 @@ class _WebViewPageState extends State<WebViewPage> {
                         clearCache: true,
                         cacheEnabled: true,
                         transparentBackground: true,
+                        verticalScrollBarEnabled:true,
+                        horizontalScrollBarEnabled:true,
+                        disableVerticalScroll:false,
+                        disableHorizontalScroll:false,
                       ),
                     ),
-                    onWebViewCreated: (controller) {
+                    onWebViewCreated: (controller) async {
                       _webViewController = controller;
                     },
                     onLoadStop: (controller, url) async {
