@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously
+// ignore_for_file: avoid_print, use_build_context_synchronously, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -448,26 +448,77 @@ class _WebViewPageState extends State<WebViewPage> {
               });
             },
             onDownloadStart: (controller, url) async {
-              // Tampilkan dialog konfirmasi kepada pengguna
               bool? userConsent = await showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("Konfirmasi Unduhan"),
-                    content:
-                        const Text("Apakah Anda ingin mendownload file ini?"),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(true); // Pengguna setuju
-                        },
-                        child: const Text("Ya"),
-                      ),
-                      TextButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    backgroundColor: Colors.white,
+                    title: Row(
+                      children: const [
+                        Icon(Icons.file_download, color: Colors.orange),
+                        SizedBox(width: 10),
+                        Text(
+                          "Konfirmasi Unduhan",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          "Apakah Anda ingin mengunduh dokumen ini?",
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 20),
+                        Icon(
+                          Icons.file_present,
+                          color: Colors.blueAccent,
+                          size: 50,
+                        ),
+                      ],
+                    ),
+                    actionsAlignment: MainAxisAlignment.spaceAround,
+                    actions: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.of(context).pop(false); // Pengguna menolak
                         },
-                        child: const Text("Tidak"),
+                        child: Text(
+                          "Tidak",
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(true); // Pengguna setuju
+                        },
+                        child: Text(
+                          "Ya",
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   );
